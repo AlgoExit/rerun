@@ -8,7 +8,7 @@ mod view_highlights;
 mod view_loading_indicator;
 mod viewport_ui;
 
-pub use tab_bar_extra::{clear_tab_bar_extra_ui, set_tab_bar_extra_ui};
+pub use tab_bar_extra::{clear_tab_bar_extra_ui, set_after_tab_ui, set_tab_bar_extra_ui};
 pub use view_loading_indicator::paint_view_loading_indicator;
 pub use viewport_ui::ViewportUi;
 
