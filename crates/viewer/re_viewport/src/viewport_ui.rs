@@ -532,6 +532,11 @@ impl<'a> egui_tiles::Behavior<ViewId> for TilesDelegate<'a, '_> {
                 .handle_select_hover_drag_interactions(&response, item, false);
         }
 
+        // AEX: host-supplied widgets share the tab's row, directly right of the
+        // title. See `tab_bar_extra::set_after_tab_ui` for why this is the only
+        // reachable seam on that side.
+        crate::tab_bar_extra::show_after_tab_ui(ui);
+
         response
     }
 

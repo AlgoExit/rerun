@@ -34,6 +34,34 @@ fn slot() -> &'static RwLock<Option<TabBarExtraUi>> {
     SLOT.get_or_init(|| RwLock::new(None))
 }
 
+fn after_tab_slot() -> &'static RwLock<Option<TabBarExtraUi>> {
+    static SLOT: OnceLock<RwLock<Option<TabBarExtraUi>>> = OnceLock::new();
+    SLOT.get_or_init(|| RwLock::new(None))
+}
+
+/// Register widgets to be drawn immediately AFTER the tab title.
+///
+/// The tab strip itself lives in `egui_tiles`, whose left-hand region is inside
+/// a horizontal scroll area we cannot reach from a `Behavior`. What we can
+/// reach is `Behavior::tab_ui`, which draws one tab: appending here places the
+/// widgets directly to the right of the title, sharing its 24 px row.
+///
+/// Called once per tab, so a host that wants a single toolbar should draw it
+/// only for the tab it cares about — with one pane (the common embedding case)
+/// that distinction does not arise.
+pub fn set_after_tab_ui(ui: impl Fn(&mut egui::Ui) + Send + Sync + 'static) {
+    if let Ok(mut slot) = after_tab_slot().write() {
+        *slot = Some(Arc::new(ui));
+    }
+}
+
+pub(crate) fn show_after_tab_ui(ui: &mut egui::Ui) {
+    let hook = after_tab_slot().read().ok().and_then(|slot| slot.clone());
+    if let Some(hook) = hook {
+        hook(ui);
+    }
+}
+
 /// Register widgets to be drawn at the right edge of the viewport tab bar.
 ///
 /// Called by the embedding application once at startup. Passing a new closure
