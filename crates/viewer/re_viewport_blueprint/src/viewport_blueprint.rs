@@ -972,9 +972,9 @@ impl ViewportBlueprint {
 pub fn tree_simplification_options() -> egui_tiles::SimplificationOptions {
     egui_tiles::SimplificationOptions {
         prune_empty_tabs: false,
-        all_panes_must_have_tabs: true,
+        all_panes_must_have_tabs: false,
         prune_empty_containers: false,
-        prune_single_child_tabs: false,
+        prune_single_child_tabs: true,
         prune_single_child_containers: false,
         join_nested_linear_containers: true,
         flatten_tabs_in_tabs: false,
