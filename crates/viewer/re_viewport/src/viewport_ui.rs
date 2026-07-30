@@ -580,6 +580,12 @@ impl<'a> egui_tiles::Behavior<ViewId> for TilesDelegate<'a, '_> {
         tabs: &egui_tiles::Tabs,
         _scroll_offset: &mut f32,
     ) {
+        // AEX: host-supplied controls go first, i.e. at the right edge (this
+        // strip is laid out right-to-left). Drawn before the early returns
+        // below so the host keeps its controls even when no pane is active —
+        // otherwise they would blink out exactly when the viewport is empty.
+        crate::tab_bar_extra::show_tab_bar_extra_ui(ui);
+
         let Some(active) = tabs.active.and_then(|active| tiles.get(active)) else {
             return;
         };

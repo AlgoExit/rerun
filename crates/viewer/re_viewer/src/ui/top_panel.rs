@@ -24,7 +24,21 @@ pub fn top_panel(
     re_tracing::profile_function!();
 
     let style_like_web = app.is_screenshotting() || app.app_env().is_test();
-    let native_window_bar = !re_ui::fullsize_content(ui.os()) && !app.custom_window_decorations();
+    // AEX: `fullsize_content` means "the native title bar overlaps our content,
+    // so leave room for the macOS traffic lights". That is a property of the
+    // NATIVE WINDOW, not of the user agent: in a browser canvas there are no
+    // window buttons to leave room for. `ui.os()` still reports `Mac` for a Mac
+    // browser, so the unguarded check below reserved a full top-bar height of
+    // empty space on web-on-macOS — visible as a blank strip above the app.
+    //
+    // `re_ui::ContextExt::top_bar_style` already computes the same idea
+    // correctly one crate over, guarding with `!style_like_web` AND
+    // `cfg!(target_os = "macos")` (`re_ui/src/context_ext.rs`); this site simply
+    // did not. We add the same `cfg!` guard — in a wasm build it is false, which
+    // is exactly the "no native window here" case.
+    let has_native_window = cfg!(target_os = "macos");
+    let native_window_bar =
+        !(has_native_window && re_ui::fullsize_content(ui.os())) && !app.custom_window_decorations();
     let top_bar_style = ui.top_bar_style(frame, style_like_web);
     let window_frame = app.window_frame_config(ui.ctx());
     let mut top_panel_frame = ui.tokens().top_panel_frame(window_frame);
