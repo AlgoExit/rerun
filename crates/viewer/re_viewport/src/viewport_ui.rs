@@ -258,7 +258,7 @@ impl ViewportUi {
                             prune_empty_containers: false,
                             prune_single_child_tabs: true,
                             prune_single_child_containers: false,
-                            all_panes_must_have_tabs: true,
+                            all_panes_must_have_tabs: false,
                             join_nested_linear_containers: false,
                         });
                     }
